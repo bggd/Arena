@@ -32,4 +32,5 @@
 *.app
 
 SDL
+assimp
 *.user

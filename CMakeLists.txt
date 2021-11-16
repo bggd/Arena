@@ -7,10 +7,11 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(SDL)
+add_subdirectory(assimp)
 
 add_executable(arena
     src/glad.c
     src/stb_image.c
     src/main.cpp)
 target_include_directories(arena PUBLIC SDL/include src)
-target_link_libraries(arena SDL2)
+target_link_libraries(arena SDL2 assimp)
