@@ -13,5 +13,5 @@ add_executable(arena
     src/glad.c
     src/stb_image.c
     src/main.cpp)
-target_include_directories(arena PUBLIC SDL/include src)
+target_include_directories(arena PUBLIC SDL/include assimp/include src)
 target_link_libraries(arena SDL2 assimp)

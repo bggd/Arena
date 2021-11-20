@@ -17,6 +17,12 @@ struct Matrix4 {
         m41, m42, m43, m44;
 };
 
+inline float deg2Rad(float degree)
+{
+    float radian = degree * (3.14159265358979323846 / 180.0F);
+    return radian;
+}
+
 inline Vector3 vec3Zero()
 {
     return {0.0F, 0.0F, 0.0F};
@@ -166,6 +172,19 @@ Matrix4 mat4CreateOrthographicOffCenter(float left, float right, float bottom, f
         0.0F, 2.0F / (top - bottom), 0.0F, 0.0F,
         0.0F, 0.0F, -2.0F / (zFarPlane - zNearPlane), 0.0F,
         tX, tY, tZ, 1.0F};
+
+    return m;
+}
+
+Matrix4 mat4CreatePerspectiveFieldOfView(float fovYRadian, float aspect, float nearPlaneDistance, float farPlaneDistance)
+{
+    float f = 1.0F / tanf(fovYRadian / 2.0F);
+
+    Matrix4 m = {
+        f / aspect, 0.0F, 0.0F, 0.0F,
+        0.0F, f, 0.0F, 0.0F,
+        0.0F, 0.0F, (farPlaneDistance + nearPlaneDistance) / (nearPlaneDistance - farPlaneDistance), -1.0F,
+        0.0F, 0.0F, (2.0F * farPlaneDistance * nearPlaneDistance) / (nearPlaneDistance - farPlaneDistance), 0.0F};
 
     return m;
 }

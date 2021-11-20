@@ -34,3 +34,6 @@
 SDL
 assimp
 *.user
+*.fbx
+*.glb
+*.gltf
