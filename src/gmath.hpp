@@ -161,6 +161,23 @@ Matrix4 mat4CreateScale(Vector3 v)
     return m;
 }
 
+Matrix4 mat4CreateFromAxisAngle(Vector3 axisUnit, float angleRadian)
+{
+    float x = axisUnit.x;
+    float y = axisUnit.y;
+    float z = axisUnit.z;
+    float c = cosf(angleRadian);
+    float s = sinf(angleRadian);
+    float t = 1.0F - c;
+
+    Matrix4 m = {
+        (x * x * t) + c, (y * x * t) + (z * s), (x * z * t) - (y * s), 0.0F,
+        (x * y * t) - (z * s), (y * y * t) + c, (y * z * t) + (x * s), 0.0F,
+        (x * z * t) + (y * s), (y * z * t) - (x * s), (z * z * t) + c, 0.0F,
+        0.0F, 0.0F, 0.0F, 1.0F};
+    return m;
+}
+
 Matrix4 mat4CreateOrthographicOffCenter(float left, float right, float bottom, float top, float zNearPlane, float zFarPlane)
 {
     float tX = -((right + left) / (right - left));

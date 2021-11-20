@@ -32,6 +32,7 @@ void onUpdate(const GameAppState& appState)
 {
     float scale = 64.0F;
     Matrix4 model = mat4CreateScale(vec3(scale, scale, scale));
+    model = mat4Multiply(mat4CreateFromAxisAngle(vec3(0.0F, 0.0F, 1.0F), deg2Rad(45.0F)), model);
     gModel.updateMesh(model);
     gCam.updateMVP();
     glViewport(0, 0, 640, 480);
