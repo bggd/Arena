@@ -8,6 +8,7 @@
 #include <cassert>
 #include <cstdint>
 #include <cstdlib>
+#include "gmath.hpp"
 
 struct Mesh {
     std::vector<float> positions;
@@ -17,7 +18,8 @@ struct Mesh {
 struct Model {
 
     const aiScene* scene = nullptr;
-    std::vector<Mesh> polygonMeshes;
+    std::vector<Mesh> baseMeshes;
+    std::vector<Mesh> displayMeshes;
 
     void load(const char* path)
     {
@@ -33,6 +35,8 @@ struct Model {
         }
 
         processNode(scene->mRootNode);
+
+        displayMeshes = baseMeshes;
     }
 
     void processNode(aiNode* node)
@@ -40,7 +44,7 @@ struct Model {
         for (uint32_t i = 0; i < node->mNumMeshes; ++i)
         {
             aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-            polygonMeshes.push_back(processMesh(mesh));
+            baseMeshes.push_back(processMesh(mesh));
         }
         for (uint32_t i = 0; i < node->mNumChildren; ++i)
         {
@@ -69,10 +73,28 @@ struct Model {
         return polygon;
     }
 
+    void updateMesh(const Matrix4& mtx) {
+        for (size_t i = 0; i < baseMeshes.size(); ++i) {
+            const std::vector<float>& pos = baseMeshes[i].positions;
+            std::vector<float>& outPos = displayMeshes[i].positions;
+            for (size_t idx = 0; idx < pos.size(); idx += 3) {
+                Vector4 v;
+                v.x = pos[idx + 0];
+                v.y = pos[idx + 1];
+                v.z = pos[idx + 2];
+                v.w = 1.0F;
+                v = vec4Transform(v, mtx);
+                outPos[idx + 0] = v.x;
+                outPos[idx + 1] = v.y;
+                outPos[idx + 2] = v.z;
+            }
+        }
+    }
+
     void draw()
     {
         glBegin(GL_TRIANGLES);
-        for (const Mesh& mesh : polygonMeshes)
+        for (const Mesh& mesh : displayMeshes)
         {
             for (uint32_t idx : mesh.indices)
             {
