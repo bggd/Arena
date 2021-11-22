@@ -99,7 +99,13 @@ struct Animation {
 
         double midWayLength = elapsedTime - lastFrame->timeStamp;
         double frameDiff = nextFrame->timeStamp - lastFrame->timeStamp;
-        float scaleFactor = float(midWayLength / frameDiff);
+        if (frameDiff < 0.0) {
+            frameDiff += currentAction->duration;
+        }
+        float scaleFactor = 1.0;
+        if (frameDiff > 0.0) {
+            scaleFactor = float(midWayLength / frameDiff);
+        }
 
         const uint32_t boneFirst = 1;
         for (uint32_t i = boneFirst; i < lastFrame->keyPerBone.size(); ++i)

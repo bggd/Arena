@@ -44,8 +44,9 @@ void onUpdate(const GameAppState& appState)
 
 int main()
 {
-    gModel.load("cube.fbx");
-    gModel.animation.setCurrentAction("Armature|RunCycle");
+    gModel.load("cube.gltf");
+    gModel.animation.setCurrentAction("RunCycle");
+    //gModel.animation.setCurrentAction("Armature|RunCycle");
 
     GameAppConfig appConfig;
     appConfig.width = 640;
