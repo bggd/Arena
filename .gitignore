@@ -33,6 +33,10 @@
 
 SDL
 assimp
+build
+.vs
+out
+CMakeSettings.json
 *.user
 *.fbx
 *.glb

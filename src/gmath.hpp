@@ -19,7 +19,7 @@ struct Matrix4 {
 
 inline float deg2Rad(float degree)
 {
-    float radian = degree * (3.14159265358979323846 / 180.0F);
+    float radian = degree * (3.14159265358979323846F / 180.0F);
     return radian;
 }
 
@@ -33,22 +33,22 @@ inline Vector3 vec3(float x, float y, float z)
     return {x, y, z};
 }
 
-Vector3 vec3Add(const Vector3& a, const Vector3& b)
+inline Vector3 vec3Add(const Vector3& a, const Vector3& b)
 {
     return {a.x + b.x, a.y + b.y, a.z + b.z};
 }
 
-Vector3 vec3Sub(const Vector3& a, const Vector3& b)
+inline Vector3 vec3Sub(const Vector3& a, const Vector3& b)
 {
     return {a.x - b.x, a.y - b.y, a.z - b.z};
 }
 
-Vector3 vec3Multiply(const Vector3& v, float scalar)
+inline Vector3 vec3Multiply(const Vector3& v, float scalar)
 {
     return {v.x * scalar, v.y * scalar, v.z * scalar};
 }
 
-float vec3Dot(const Vector3& a, const Vector3& b)
+inline float vec3Dot(const Vector3& a, const Vector3& b)
 {
     const float* A = (const float*)&a;
     const float* B = (const float*)&b;
@@ -62,12 +62,12 @@ float vec3Dot(const Vector3& a, const Vector3& b)
     return dot;
 }
 
-float vec3Length(const Vector3& v)
+inline float vec3Length(const Vector3& v)
 {
     return sqrtf(vec3Dot(v, v));
 }
 
-Vector3 vec3Normalize(const Vector3& v)
+inline Vector3 vec3Normalize(const Vector3& v)
 {
     const float* V = (const float*)&v;
 
@@ -82,7 +82,7 @@ Vector3 vec3Normalize(const Vector3& v)
     return n;
 }
 
-Vector3 vec3Cross(const Vector3& a, const Vector3& b)
+inline Vector3 vec3Cross(const Vector3& a, const Vector3& b)
 {
     return {
         a.y * b.z - a.z * b.y,
@@ -100,7 +100,7 @@ inline Vector4 vec4One()
     return {1.0F, 1.0F, 1.0F, 1.0F};
 }
 
-Vector4 vec4Transform(const Vector4& v, const Matrix4& m)
+inline Vector4 vec4Transform(const Vector4& v, const Matrix4& m)
 {
     Vector4 result = vec4Zero();
     const float* A = (const float*)&v;
@@ -127,12 +127,12 @@ inline Matrix4 mat4Zero()
         0.0F, 0.0F, 0.0F, 0.0F};
 }
 
-const float* mat4Ptr(const Matrix4& m)
+inline const float* mat4Ptr(const Matrix4& m)
 {
     return (const float*)&m;
 }
 
-Matrix4 mat4Multiply(const Matrix4& a, const Matrix4& b)
+inline Matrix4 mat4Multiply(const Matrix4& a, const Matrix4& b)
 {
     Matrix4 m = mat4Zero();
     const float* A = (const float*)&a;
@@ -151,7 +151,7 @@ Matrix4 mat4Multiply(const Matrix4& a, const Matrix4& b)
     return m;
 }
 
-Matrix4 mat4CreateScale(Vector3 v)
+inline Matrix4 mat4CreateScale(Vector3 v)
 {
     Matrix4 m = mat4Zero();
     m.m11 = v.x;
@@ -161,7 +161,7 @@ Matrix4 mat4CreateScale(Vector3 v)
     return m;
 }
 
-Matrix4 mat4CreateFromAxisAngle(Vector3 axisUnit, float angleRadian)
+inline Matrix4 mat4CreateFromAxisAngle(Vector3 axisUnit, float angleRadian)
 {
     float x = axisUnit.x;
     float y = axisUnit.y;
@@ -178,7 +178,7 @@ Matrix4 mat4CreateFromAxisAngle(Vector3 axisUnit, float angleRadian)
     return m;
 }
 
-Matrix4 mat4CreateOrthographicOffCenter(float left, float right, float bottom, float top, float zNearPlane, float zFarPlane)
+inline Matrix4 mat4CreateOrthographicOffCenter(float left, float right, float bottom, float top, float zNearPlane, float zFarPlane)
 {
     float tX = -((right + left) / (right - left));
     float tY = -((top + bottom) / (top - bottom));
@@ -193,7 +193,7 @@ Matrix4 mat4CreateOrthographicOffCenter(float left, float right, float bottom, f
     return m;
 }
 
-Matrix4 mat4CreatePerspectiveFieldOfView(float fovYRadian, float aspect, float nearPlaneDistance, float farPlaneDistance)
+inline Matrix4 mat4CreatePerspectiveFieldOfView(float fovYRadian, float aspect, float nearPlaneDistance, float farPlaneDistance)
 {
     float f = 1.0F / tanf(fovYRadian / 2.0F);
 
@@ -206,7 +206,7 @@ Matrix4 mat4CreatePerspectiveFieldOfView(float fovYRadian, float aspect, float n
     return m;
 }
 
-Matrix4 mat4LookAt(const Vector3& eye, const Vector3& center, const Vector3& up)
+inline Matrix4 mat4LookAt(const Vector3& eye, const Vector3& center, const Vector3& up)
 {
     Vector3 cameraDirection = vec3Normalize(vec3Sub(eye, center));
     Vector3 cameraRight = vec3Normalize(vec3Cross(up, cameraDirection));
@@ -227,17 +227,17 @@ Matrix4 mat4LookAt(const Vector3& eye, const Vector3& center, const Vector3& up)
     return mat4Multiply(translation, rotation);
 }
 
-Vector3 operator*(const Vector3& v, float scalar)
+inline Vector3 operator*(const Vector3& v, float scalar)
 {
     return vec3Multiply(v, scalar);
 }
 
-Vector3 operator+(const Vector3& a, const Vector3& b)
+inline Vector3 operator+(const Vector3& a, const Vector3& b)
 {
     return vec3Add(a, b);
 }
 
-Vector3 operator-(const Vector3& a, const Vector3& b)
+inline Vector3 operator-(const Vector3& a, const Vector3& b)
 {
     return vec3Sub(a, b);
 }
