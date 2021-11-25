@@ -127,6 +127,15 @@ inline Matrix4 mat4Zero()
         0.0F, 0.0F, 0.0F, 0.0F};
 }
 
+inline Matrix4 mat4Identity()
+{
+    return {
+        1.0F, 0.0F, 0.0F, 0.0F,
+        0.0F, 1.0F, 0.0F, 0.0F,
+        0.0F, 0.0F, 1.0F, 0.0F,
+        0.0F, 0.0F, 0.0F, 1.0F};
+}
+
 inline const float* mat4Ptr(const Matrix4& m)
 {
     return (const float*)&m;
@@ -149,6 +158,15 @@ inline Matrix4 mat4Multiply(const Matrix4& a, const Matrix4& b)
         }
     }
     return m;
+}
+
+inline Matrix4 mat4CreateTranslation(Vector3 v)
+{
+    return {
+        1.0F, 0.0F, 0.0F, 0.0F,
+        0.0F, 1.0F, 0.0F, 0.0F,
+        0.0F, 0.0F, 1.0F, 0.0F,
+        v.x, v.y, v.z, 1.0F};
 }
 
 inline Matrix4 mat4CreateScale(Vector3 v)
