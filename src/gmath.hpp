@@ -17,6 +17,10 @@ struct Matrix4 {
         m41, m42, m43, m44;
 };
 
+struct Quaternion {
+    float x, y, z, w;
+};
+
 inline float deg2Rad(float degree)
 {
     float radian = degree * (3.14159265358979323846F / 180.0F);
@@ -38,7 +42,7 @@ inline Vector3 vec3Add(const Vector3& a, const Vector3& b)
     return {a.x + b.x, a.y + b.y, a.z + b.z};
 }
 
-inline Vector3 vec3Sub(const Vector3& a, const Vector3& b)
+inline Vector3 vec3Subtract(const Vector3& a, const Vector3& b)
 {
     return {a.x - b.x, a.y - b.y, a.z - b.z};
 }
@@ -62,9 +66,14 @@ inline float vec3Dot(const Vector3& a, const Vector3& b)
     return dot;
 }
 
+inline float vec3LengthSquared(const Vector3& v)
+{
+    return vec3Dot(v, v);
+}
+
 inline float vec3Length(const Vector3& v)
 {
-    return sqrtf(vec3Dot(v, v));
+    return sqrtf(vec3LengthSquared(v));
 }
 
 inline Vector3 vec3Normalize(const Vector3& v)
@@ -88,6 +97,17 @@ inline Vector3 vec3Cross(const Vector3& a, const Vector3& b)
         a.y * b.z - a.z * b.y,
         a.z * b.x - a.x * b.z,
         a.x * b.y - a.y * b.x};
+}
+
+inline Vector3 vec3Negate(const Vector3& v)
+{
+    return {-v.x, -v.y, -v.z};
+}
+
+inline Vector3 vec3Transform(const Vector3& v, const Quaternion& q)
+{
+    Vector3 qv = vec3(q.x, q.y, q.z);
+    return vec3Add(vec3Multiply(vec3Cross(v, qv), 2.0F * q.w), vec3Add(vec3Multiply(v, q.w * q.w - vec3Dot(qv, qv)), vec3Multiply(qv, 2.0F * vec3Dot(qv, v))));
 }
 
 inline Vector4 vec4Zero()
@@ -196,6 +216,20 @@ inline Matrix4 mat4CreateFromAxisAngle(Vector3 axisUnit, float angleRadian)
     return m;
 }
 
+inline Matrix4 mat4CreateFromQuaternion(const Quaternion& q)
+{
+    Vector3 r = vec3Transform(vec3(1.0F, 0.0F, 0.0F), q);
+    Vector3 u = vec3Transform(vec3(0.0F, 1.0F, 0.0F), q);
+    Vector3 f = vec3Transform(vec3(0.0F, 0.0F, 1.0F), q);
+
+    Matrix4 m = {
+        r.x, r.y, r.z, 0.0F,
+        u.x, u.y, u.z, 0.0F,
+        f.x, f.y, f.z, 0.0F,
+        0.0F, 0.0F, 0.0F, 1.0F};
+    return m;
+}
+
 inline Matrix4 mat4CreateOrthographicOffCenter(float left, float right, float bottom, float top, float zNearPlane, float zFarPlane)
 {
     float tX = -((right + left) / (right - left));
@@ -226,7 +260,7 @@ inline Matrix4 mat4CreatePerspectiveFieldOfView(float fovYRadian, float aspect, 
 
 inline Matrix4 mat4LookAt(const Vector3& eye, const Vector3& center, const Vector3& up)
 {
-    Vector3 cameraDirection = vec3Normalize(vec3Sub(eye, center));
+    Vector3 cameraDirection = vec3Normalize(vec3Subtract(eye, center));
     Vector3 cameraRight = vec3Normalize(vec3Cross(up, cameraDirection));
     Vector3 cameraUp = vec3Cross(cameraDirection, cameraRight);
 
@@ -245,6 +279,63 @@ inline Matrix4 mat4LookAt(const Vector3& eye, const Vector3& center, const Vecto
     return mat4Multiply(translation, rotation);
 }
 
+inline Quaternion quatCreateAxisAngle(Vector3 axisUnit, float angleRadian)
+{
+    float s = sinf(angleRadian / 2.0F);
+    return {axisUnit.x * s, axisUnit.y * s, axisUnit.z * s, cosf(angleRadian / 2.0F)};
+}
+
+inline Quaternion quatAdd(const Quaternion& a, const Quaternion& b)
+{
+    return {a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w};
+}
+
+inline Quaternion quatSubtraction(const Quaternion& a, const Quaternion& b)
+{
+    return {a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w};
+}
+
+inline Quaternion quatMultiply(const Quaternion& a, const Quaternion& b)
+{
+    // clang-format off
+    return {
+        ( a.x * b.w) + (a.y * b.z) - (a.z * b.y) + (a.w * b.x),
+        (-a.x * b.z) + (a.y * b.w) + (a.z * b.x) + (a.w * b.y),
+        ( a.x * b.y) - (a.y * b.x) + (a.z * b.w) + (a.w * b.z),
+        (-a.x * b.x) - (a.y * b.y) - (a.z * b.z) + (a.w * b.w)};
+    // clang-format on
+}
+
+inline Quaternion quatMultiply(const Quaternion& q, float scalar)
+{
+    return {q.x * scalar, q.y * scalar, q.z * scalar, q.w * scalar};
+}
+
+inline Quaternion quatNegate(const Quaternion& q)
+{
+    return {-q.x, -q.y, -q.z, -q.w};
+}
+
+inline float quatDot(const Quaternion& a, const Quaternion& b)
+{
+    return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
+}
+
+inline float quatLengthSquared(const Quaternion& q)
+{
+    return quatDot(q, q);
+}
+
+inline float quatLength(const Quaternion& q)
+{
+    return sqrtf(quatLengthSquared(q));
+}
+
+inline Quaternion quatConjugate(const Quaternion& q)
+{
+    return {-q.x, -q.y, -q.z, q.w};
+}
+
 inline Vector3 operator*(const Vector3& v, float scalar)
 {
     return vec3Multiply(v, scalar);
@@ -257,5 +348,5 @@ inline Vector3 operator+(const Vector3& a, const Vector3& b)
 
 inline Vector3 operator-(const Vector3& a, const Vector3& b)
 {
-    return vec3Sub(a, b);
+    return vec3Subtract(a, b);
 }
