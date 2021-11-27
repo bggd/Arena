@@ -9,12 +9,25 @@
 struct BaseNode {
 private:
     Vector3 position = vec3Zero();
-    Matrix4 localTransform = mat4Identity();
-    Matrix4 worldTransform = mat4Identity();
+    Quaternion rotation = quatIdentity();
+    Vector3 scale = vec3One();
+    Matrix4 localMatrix = mat4Identity();
+    Matrix4 worldMatrix = mat4Identity();
 
-    void updateLocalTransform()
+    void updateLocalMatrix()
     {
-        localTransform = mat4CreateTranslation(position);
+        Vector3 x = vec3Transform(vec3(1.0F, 0.0F, 0.0F), rotation);
+        Vector3 y = vec3Transform(vec3(0.0F, 1.0F, 0.0F), rotation);
+        Vector3 z = vec3Transform(vec3(0.0F, 0.0F, 1.0F), rotation);
+        x = vec3Multiply(x, scale.x);
+        y = vec3Multiply(y, scale.y);
+        z = vec3Multiply(z, scale.z);
+        Matrix4 newMatrix = {
+            x.x, x.y, x.z, 0.0F,
+            y.x, y.y, y.z, 0.0F,
+            z.x, z.y, z.z, 0.0F,
+            position.x, position.y, position.z, 1.0F};
+        localMatrix = newMatrix;
     }
 
 public:
@@ -26,22 +39,44 @@ public:
     void setPosition(const Vector3& pos)
     {
         position = pos;
-        updateLocalTransform();
+        updateLocalMatrix();
     }
 
-    const Matrix4& getLocalTransform()
+    Quaternion getRotation()
     {
-        return localTransform;
+        return rotation;
     }
 
-    const Matrix4& getWorldTransform()
+    void setRotation(const Quaternion& rot)
     {
-        return worldTransform;
+        rotation = rot;
+        updateLocalMatrix();
     }
 
-    void setWorldTransform(const Matrix4& m)
+    Vector3 getScale()
     {
-        worldTransform = m;
+        return scale;
+    }
+
+    void setScale(const Vector3& s)
+    {
+        scale = s;
+        updateLocalMatrix();
+    }
+
+    const Matrix4& getLocalMatrix()
+    {
+        return localMatrix;
+    }
+
+    const Matrix4& getWorldMatrix()
+    {
+        return worldMatrix;
+    }
+
+    void setWorldMatrix(const Matrix4& m)
+    {
+        worldMatrix = m;
     }
 };
 
@@ -100,15 +135,15 @@ struct SceneTree {
 
         std::stack<GameObject*> nodeStack;
         nodeStack.push(root);
-        root->setWorldTransform(root->getLocalTransform());
+        root->setWorldMatrix(root->getLocalMatrix());
         while (nodeStack.size())
         {
             GameObject* parent = nodeStack.top();
             nodeStack.pop();
             for (GameObject* child : parent->getObjects())
             {
-                const Matrix4& m = mat4Multiply(parent->getWorldTransform(), child->getLocalTransform());
-                child->setWorldTransform(m);
+                const Matrix4& m = mat4Multiply(parent->getWorldMatrix(), child->getLocalMatrix());
+                child->setWorldMatrix(m);
                 nodeStack.push(child);
             }
         }

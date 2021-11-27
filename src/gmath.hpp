@@ -32,6 +32,11 @@ inline Vector3 vec3Zero()
     return {0.0F, 0.0F, 0.0F};
 }
 
+inline Vector3 vec3One()
+{
+    return {1.0F, 1.0F, 1.0F};
+}
+
 inline Vector3 vec3(float x, float y, float z)
 {
     return {x, y, z};
@@ -277,6 +282,11 @@ inline Matrix4 mat4LookAt(const Vector3& eye, const Vector3& center, const Vecto
         -eye.x, -eye.y, -eye.z, 1.0F};
 
     return mat4Multiply(translation, rotation);
+}
+
+inline Quaternion quatIdentity()
+{
+    return {0.0F, 0.0F, 0.F, 1.0F};
 }
 
 inline Quaternion quatCreateAxisAngle(Vector3 axisUnit, float angleRadian)

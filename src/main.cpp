@@ -12,7 +12,7 @@ struct Player : GameObject {
     void onUpdate(float dt) override
     {
         model.updateAnimation(dt);
-        model.updateMesh(getWorldTransform());
+        model.updateMesh(getWorldMatrix());
         model.draw();
     }
 };
@@ -68,10 +68,13 @@ int main()
     obj.setPosition(vec3(0.0F, 0.0F, 1.0F));
     obj.model.load("cube.gltf");
     obj.model.animation.setCurrentAction("RunCycle");
+    obj.setScale(vec3(2.0F, 2.0F, 2.0F));
+    obj.setRotation(quatCreateAxisAngle(vec3(0.0F, 1.0F, 0.0F), deg2Rad(90.0F)));
     obj.addObject(new Player());
     static_cast<Player*>(obj.objects[0])->setPosition(vec3(0.0F, 0.0F, 1.0F));
     static_cast<Player*>(obj.objects[0])->model.load("cube.gltf");
     static_cast<Player*>(obj.objects[0])->model.animation.setCurrentAction("RunCycle");
+    //static_cast<Player*>(obj.objects[0])->setScale(vec3(2.0F, 2.0F, 2.0F));
     gScene.setRoot(&obj);
     //gScene.updateGameObjects(1.0F/60.0F);
 
