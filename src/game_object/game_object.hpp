@@ -142,7 +142,7 @@ struct SceneTree {
             nodeStack.pop();
             for (GameObject* child : parent->getObjects())
             {
-                const Matrix4& m = mat4Multiply(parent->getWorldMatrix(), child->getLocalMatrix());
+                Matrix4 m = mat4Multiply(parent->getWorldMatrix(), child->getLocalMatrix());
                 child->setWorldMatrix(m);
                 nodeStack.push(child);
             }
