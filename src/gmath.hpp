@@ -286,7 +286,7 @@ inline Matrix4 mat4LookAt(const Vector3& eye, const Vector3& center, const Vecto
 
 inline Quaternion quatIdentity()
 {
-    return {0.0F, 0.0F, 0.F, 1.0F};
+    return {0.0F, 0.0F, 0.0F, 1.0F};
 }
 
 inline Quaternion quatCreateAxisAngle(Vector3 axisUnit, float angleRadian)
